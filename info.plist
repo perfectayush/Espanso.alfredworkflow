@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>bundleid</key>
+	<string>com.ayush.alfred-espanso</string>
+	<key>connections</key>
+	<dict>
+		<key>FILTER</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>EXPAND</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+			</dict>
+		</array>
+		<key>HOTKEY</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>FILTER</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+			</dict>
+		</array>
+	</dict>
+	<key>createdby</key>
+	<string>Ayush Goyal</string>
+	<key>description</key>
+	<string>Search espanso snippets and expand them</string>
+	<key>name</key>
+	<string>Espanso Snippets</string>
+	<key>objects</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>action</key>
+				<integer>0</integer>
+				<key>argument</key>
+				<integer>0</integer>
+				<key>hotkey</key>
+				<integer>41</integer>
+				<key>hotmod</key>
+				<integer>1048576</integer>
+				<key>hotstring</key>
+				<string>;</string>
+				<key>leftcursor</key>
+				<false/>
+				<key>modsmode</key>
+				<integer>0</integer>
+				<key>relatedAppsMode</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.trigger.hotkey</string>
+			<key>uid</key>
+			<string>HOTKEY</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>alfredfiltersresults</key>
+				<false/>
+				<key>argumenttype</key>
+				<integer>1</integer>
+				<key>keyword</key>
+				<string>es</string>
+				<key>queuedelaycustom</key>
+				<integer>0</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<true/>
+				<key>queuemode</key>
+				<integer>2</integer>
+				<key>script</key>
+				<string>export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+matches=$(espanso match list --json)
+# fzf ranks "index&lt;TAB&gt;triggers label replace" lines; the indices map back into $matches.
+jq -r 'to_entries[] | .value as $v |
+  "\(.key)\t\($v.triggers | join(" ")) \($v.label // "") \($v.replace | gsub("\\s+"; " "))"' &lt;&lt;&lt; "$matches" |
+  fzf --filter "$1" --delimiter '\t' --nth 2 |
+  cut -f1 |
+  jq -n --argjson m "$matches" '{items: [inputs | $m[.] | {
+    title: .triggers[0],
+    subtitle: (.label // ""),
+    arg: .triggers[0],
+    text: {largetype: .replace}
+  }]}'</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>title</key>
+				<string>Search espanso snippets</string>
+				<key>type</key>
+				<integer>0</integer>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>FILTER</string>
+			<key>version</key>
+			<integer>3</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>script</key>
+				<string># Give focus time to return to the previous app before espanso types into it.
+# espanso shows its own form window for matches with form placeholders.
+export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+sleep 0.3
+espanso match exec -t "$1"</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>type</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>EXPAND</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+	</array>
+	<key>uidata</key>
+	<dict>
+		<key>EXPAND</key>
+		<dict>
+			<key>xpos</key>
+			<real>450.0</real>
+			<key>ypos</key>
+			<real>50.0</real>
+		</dict>
+		<key>FILTER</key>
+		<dict>
+			<key>xpos</key>
+			<real>250.0</real>
+			<key>ypos</key>
+			<real>50.0</real>
+		</dict>
+		<key>HOTKEY</key>
+		<dict>
+			<key>xpos</key>
+			<real>50.0</real>
+			<key>ypos</key>
+			<real>50.0</real>
+		</dict>
+	</dict>
+	<key>version</key>
+	<string>1.0.0</string>
+</dict>
+</plist>
