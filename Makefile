@@ -1,6 +1,6 @@
 OUT := Espanso.alfredworkflow
 
-$(OUT): info.plist
+$(OUT): info.plist icon.png
 	rm -f $@
 	zip -j $@ $^
 
