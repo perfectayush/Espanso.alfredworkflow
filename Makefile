@@ -1,9 +1,20 @@
 OUT := Espanso.alfredworkflow
+BIN := alfred-espanso
+TARGETS := aarch64-apple-darwin x86_64-apple-darwin
+SRC := Cargo.toml Cargo.lock $(wildcard src/*.rs)
 
-$(OUT): info.plist icon.png
+$(OUT): info.plist icon.png $(BIN)
 	rm -f $@
 	zip -j $@ $^
 
-.PHONY: clean
+$(BIN): $(SRC)
+	$(foreach t,$(TARGETS),cargo build --release --target $(t);)
+	lipo -create -output $@ $(foreach t,$(TARGETS),target/$(t)/release/$(BIN))
+
+.PHONY: test clean
+test:
+	cargo test
+
 clean:
-	rm -f $(OUT)
+	cargo clean
+	rm -f $(OUT) $(BIN)

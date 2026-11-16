@@ -76,19 +76,7 @@
 				<key>queuemode</key>
 				<integer>2</integer>
 				<key>script</key>
-				<string>export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
-matches=$(espanso match list --json)
-# fzf ranks "index&lt;TAB&gt;triggers label replace" lines; the indices map back into $matches.
-jq -r 'to_entries[] | .value as $v |
-  "\(.key)\t\($v.triggers | join(" ")) \($v.label // "") \($v.replace | gsub("\\s+"; " "))"' &lt;&lt;&lt; "$matches" |
-  fzf --filter "$1" --delimiter '\t' --nth 2 |
-  cut -f1 |
-  jq -n --argjson m "$matches" '{items: [inputs | $m[.] | {
-    title: .triggers[0],
-    subtitle: (.label // ""),
-    arg: .triggers[0],
-    text: {largetype: .replace}
-  }]}'</string>
+				<string>./alfred-espanso "$1"</string>
 				<key>scriptargtype</key>
 				<integer>1</integer>
 				<key>title</key>
